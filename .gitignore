@@ -1,0 +1,70 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Distribution
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Test and coverage artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage.xml
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+nosetests.xml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Memory / vector DB data
+chronicle_data/
+*.lance
+*.lancedb
+*.db
+chroma_db/
+qdrant_data/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# pyproject lock
+# uv.lock is intentionally excluded from VCS in this project
+uv.lock
+
+# Secrets
+*.pem
+*.key
+secrets/
